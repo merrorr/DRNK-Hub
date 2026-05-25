@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRNK — Sentai PJ Event Tool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F5F2ED;
+    --surface: #FFFFFF;
+    --surface2: #F0EDE7;
+    --border: rgba(0,0,0,0.10);
+    --border-strong: rgba(0,0,0,0.18);
+    --text: #1A1714;
+    --text-muted: #7A7269;
+    --text-hint: #AEA89F;
+    --choc-bg: #FDF0E8;
+    --choc-mid: #E8896A;
+    --choc-dark: #7C3A1E;
+    --choc-border: rgba(200,100,50,0.2);
+    --mat-bg: #EDF5E8;
+    --mat-mid: #6BAA4A;
+    --mat-dark: #2A5A18;
+    --mat-border: rgba(80,150,40,0.2);
+    --yog-bg: #F0EAF8;
+    --yog-mid: #9B6DD0;
+    --yog-dark: #4A2478;
+    --yog-border: rgba(130,80,200,0.2);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --radius-xs: 5px;
+    --mono: 'DM Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* HEADER */
+  .site-header {
+    background: var(--text);
+    color: #fff;
+    padding: 28px 40px 24px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .site-header h1 {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .site-header h1 span { color: #C8855A; }
+  .header-meta {
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    font-family: var(--mono);
+    text-align: right;
+    line-height: 1.7;
+  }
+  .header-meta strong { color: rgba(255,255,255,0.75); font-weight: 500; }
+
+  /* NAV TABS */
+  .nav-tabs {
+    background: var(--text);
+    padding: 0 40px;
+    display: flex;
+    gap: 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .nav-tab {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 14px 20px;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.4);
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .nav-tab.active {
+    color: #fff;
+    border-bottom-color: #C8855A;
+  }
+  .nav-tab:hover { color: rgba(255,255,255,0.75); }
+
+  /* PANELS */
+  .panel { display: none; padding: 36px 40px 60px; max-width: 900px; margin: 0 auto; }
+  .panel.active { display: block; }
+
+  /* SECTION TITLES */
+  .section-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-hint);
+    margin-bottom: 16px;
+  }
+  .section-block { margin-bottom: 32px; }
+
+  /* STAT CARDS */
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 28px; }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+  }
+  .stat-label { font-size: 11px; color: var(--text-hint); font-family: var(--mono); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 4px; }
+  .stat-val { font-size: 24px; font-weight: 500; color: var(--text); line-height: 1; }
+  .stat-unit { font-size: 12px; color: var(--text-muted); font-weight: 400; }
+
+  /* CONTROL CARDS */
+  .control-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 14px;
+  }
+  .control-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; }
+  .control-item label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: var(--mono);
+    margin-bottom: 8px;
+    letter-spacing: 0.03em;
+  }
+  .slider-row { display: flex; align-items: center; gap: 10px; }
+  .slider-row input[type=range] { flex: 1; accent-color: var(--text); height: 4px; cursor: pointer; }
+  .slider-val {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 500;
+    min-width: 52px;
+    text-align: right;
+    color: var(--text);
+  }
+
+  /* PRODUCT TABLE */
+  .product-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .product-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+  .product-name-wrap { display: flex; align-items: center; gap: 10px; }
+  .product-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .product-name { font-size: 14px; font-weight: 500; color: var(--text); }
+  .product-sop { font-size: 11px; font-family: var(--mono); color: var(--text-hint); }
+  .product-body { padding: 14px 20px; display: flex; align-items: center; gap: 16px; }
+  .product-body label { font-size: 12px; color: var(--text-muted); font-family: var(--mono); white-space: nowrap; }
+  .product-body input[type=range] { flex: 1; accent-color: var(--text); cursor: pointer; }
+  .product-result {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 500;
+    min-width: 68px;
+    text-align: right;
+  }
+  .product-cups { font-family: var(--mono); font-size: 12px; color: var(--text-muted); min-width: 52px; text-align: center; }
+
+  /* SUMMARY CARD */
+  .summary-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .summary-inner { padding: 20px 24px; }
+  .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-row .s-label { color: var(--text-muted); }
+  .summary-row .s-val { font-family: var(--mono); font-weight: 500; }
+  .summary-total {
+    background: var(--text);
+    color: #fff;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .summary-total .t-label { font-size: 13px; opacity: 0.7; font-family: var(--mono); letter-spacing: 0.04em; text-transform: uppercase; }
+  .summary-total .t-val { font-family: var(--mono); font-size: 22px; font-weight: 500; }
+  .event-section {
+    padding: 16px 24px;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+  }
+  .event-label { font-size: 11px; font-family: var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-hint); margin-bottom: 10px; }
+  .event-row { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; border-bottom: 1px dashed var(--border); }
+  .event-row:last-child { border-bottom: none; }
+  .event-row .e-label { color: var(--text-muted); }
+  .event-row .e-val { font-family: var(--mono); font-weight: 500; }
+  .event-total-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 24px;
+    border-top: 1px solid var(--border-strong);
+    font-size: 13px;
+  }
+  .event-total-row .et-label { font-family: var(--mono); letter-spacing: 0.04em; color: var(--text-muted); }
+  .event-total-row .et-val { font-family: var(--mono); font-weight: 500; font-size: 15px; }
+
+  /* SOP PANEL */
+  .drink-toggle { display: flex; gap: 8px; margin-bottom: 20px; }
+  .drink-btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .drink-btn.on-choc { background: var(--choc-bg); color: var(--choc-dark); border-color: var(--choc-border); }
+  .drink-btn.on-mat  { background: var(--mat-bg);  color: var(--mat-dark);  border-color: var(--mat-border); }
+
+  .sop-scale-row { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .sop-scale-row label { font-size: 12px; color: var(--text-muted); font-family: var(--mono); white-space: nowrap; }
+  .sop-scale-row input[type=range] { flex: 1; max-width: 200px; accent-color: var(--text); cursor: pointer; }
+  .sop-scale-val { font-family: var(--mono); font-size: 13px; font-weight: 500; }
+
+  .sop-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+  .sop-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .sop-card-head {
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sop-card-icon {
+    width: 32px; height: 32px; border-radius: var(--radius-xs);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .sop-card-title { font-size: 14px; font-weight: 500; color: var(--text); }
+  .sop-card-sub { font-size: 11px; font-family: var(--mono); color: var(--text-hint); }
+  .sop-ing-list { padding: 10px 18px; }
+  .sop-ing {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 10px;
+  }
+  .sop-ing:last-child { border-bottom: none; }
+  .ing-n { font-size: 13px; color: var(--text-muted); }
+  .ing-n sub { font-size: 10px; color: var(--text-hint); }
+  .ing-v { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; }
+  .sop-note {
+    margin: 0 18px 14px;
+    padding: 8px 12px;
+    background: var(--surface2);
+    border-radius: var(--radius-xs);
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    line-height: 1.5;
+  }
+  .note-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    background: var(--border);
+    color: var(--text-hint);
+    padding: 1px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* BADGE */
+  .mult-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-weight: 500;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .mb-choc { background: var(--choc-bg); color: var(--choc-dark); }
+  .mb-mat  { background: var(--mat-bg);  color: var(--mat-dark); }
+
+  /* EVENT INFO BAR */
+  .event-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .event-item {
+    padding: 12px 20px;
+    border-right: 1px solid var(--border);
+    flex: 1;
+    min-width: 120px;
+  }
+  .event-item:last-child { border-right: none; }
+  .ei-label { font-size: 10px; font-family: var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-hint); margin-bottom: 3px; }
+  .ei-val { font-size: 14px; font-weight: 500; color: var(--text); }
+
+  /* FOOTER */
+  .site-footer {
+    background: var(--text);
+    color: rgba(255,255,255,0.3);
+    text-align: center;
+    padding: 20px 40px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 600px) {
+    .site-header { padding: 20px 20px 16px; flex-direction: column; align-items: flex-start; }
+    .header-meta { text-align: left; }
+    .nav-tabs { padding: 0 20px; }
+    .panel { padding: 24px 20px 48px; }
+    .product-head { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>D<span>R</span>NK<span style="color:rgba(255,255,255,0.2);margin:0 6px;">—</span>Sentai PJ</h1>
+  <div class="header-meta">
+    <strong>9 – 11 Jun 2026</strong><br>
+    2 sessions/day &nbsp;·&nbsp; 11am–1pm &amp; 2pm–4pm<br>
+    Max 30 pax per session
+  </div>
+</header>
+
+<nav class="nav-tabs">
+  <button class="nav-tab active" onclick="switchPanel('calc', this)">Powder Calculator</button>
+  <button class="nav-tab" onclick="switchPanel('sop', this)">SOP Reference</button>
+</nav>
+
+<!-- ═══════════════ CALCULATOR PANEL ═══════════════ -->
+<div class="panel active" id="panel-calc">
+
+  <div class="event-bar">
+    <div class="event-item"><div class="ei-label">Duration</div><div class="ei-val">3 days</div></div>
+    <div class="event-item"><div class="ei-label">Sessions/day</div><div class="ei-val">2 sessions</div></div>
+    <div class="event-item"><div class="ei-label">Session 1</div><div class="ei-val">11am – 1pm</div></div>
+    <div class="event-item"><div class="ei-label">Session 2</div><div class="ei-val">2pm – 4pm</div></div>
+    <div class="event-item"><div class="ei-label">Total sessions</div><div class="ei-val">6 sessions</div></div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-label">Pax / session</div>
+      <div class="stat-val" id="d-pax">30 <span class="stat-unit">pax</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total 12oz cups</div>
+      <div class="stat-val" id="d-cups">— <span class="stat-unit">cups</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Powder / session</div>
+      <div class="stat-val" id="d-gpersession">— <span class="stat-unit">g</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Event total</div>
+      <div class="stat-val" id="d-eventkg">— <span class="stat-unit">kg</span></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="section-title">Session settings</div>
+    <div class="control-card">
+      <div class="control-grid">
+        <div class="control-item">
+          <label>Pax per session</label>
+          <div class="slider-row">
+            <input type="range" id="s-pax" min="5" max="30" step="1" value="30" oninput="recalc()">
+            <span class="slider-val" id="o-pax">30</span>
+          </div>
+        </div>
+        <div class="control-item">
+          <label>Sample cups per 12oz</label>
+          <div class="slider-row">
+            <input type="range" id="s-samples" min="4" max="12" step="1" value="8" oninput="recalc()">
+            <span class="slider-val" id="o-samples">8</span>
+          </div>
+        </div>
+        <div class="control-item">
+          <label>Samples per visitor</label>
+          <div class="slider-row">
+            <input type="range" id="s-vis" min="1" max="3" step="1" value="1" oninput="recalc()">
+            <span class="slider-val" id="o-vis">1</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="section-title">Products — 12oz cups per session</div>
+
+    <div class="product-card">
+      <div class="product-head">
+        <div class="product-name-wrap">
+          <div class="product-dot" style="background:#C8855A;"></div>
+          <div>
+            <div class="product-name">Chocolate (iced)</div>
+            <div class="product-sop">2 scoops × 15g = 30g per 12oz</div>
+          </div>
+        </div>
+        <div class="product-result" id="r-choc" style="color:#7C3A1E;">—</div>
+      </div>
+      <div class="product-body">
+        <label>Cups</label>
+        <input type="range" id="s-choc" min="0" max="20" step="1" value="4" oninput="recalc()">
+        <span class="product-cups" id="o-choc">4 cups</span>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <div class="product-head">
+        <div class="product-name-wrap">
+          <div class="product-dot" style="background:#9B6DD0;"></div>
+          <div>
+            <div class="product-name">Yogurt frappe</div>
+            <div class="product-sop">2 scoops × 15g = 30g per 12oz</div>
+          </div>
+        </div>
+        <div class="product-result" id="r-yog" style="color:#4A2478;">—</div>
+      </div>
+      <div class="product-body">
+        <label>Cups</label>
+        <input type="range" id="s-yog" min="0" max="20" step="1" value="4" oninput="recalc()">
+        <span class="product-cups" id="o-yog">4 cups</span>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <div class="product-head">
+        <div class="product-name-wrap">
+          <div class="product-dot" style="background:#6BAA4A;"></div>
+          <div>
+            <div class="product-name">Matcha latte (iced)</div>
+            <div class="product-sop">35g per 12oz</div>
+          </div>
+        </div>
+        <div class="product-result" id="r-mat" style="color:#2A5A18;">—</div>
+      </div>
+      <div class="product-body">
+        <label>Cups</label>
+        <input type="range" id="s-mat" min="0" max="20" step="1" value="4" oninput="recalc()">
+        <span class="product-cups" id="o-mat">4 cups</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="section-title">Summary</div>
+    <div class="summary-card">
+      <div class="summary-inner" id="summary-rows"></div>
+      <div class="summary-total">
+        <div class="t-label">Per session</div>
+        <div class="t-val" id="t-session">— g</div>
+      </div>
+      <div class="event-section">
+        <div class="event-label">Event totals — 6 sessions</div>
+        <div id="event-rows"></div>
+      </div>
+      <div class="event-total-row">
+        <span class="et-label">Total event powder</span>
+        <span class="et-val" id="t-event">—</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════ SOP PANEL ═══════════════ -->
+<div class="panel" id="panel-sop">
+
+  <div class="drink-toggle">
+    <button class="drink-btn on-choc" id="btn-choc" onclick="showDrink('choc')">Chocolate</button>
+    <button class="drink-btn" id="btn-mat" onclick="showDrink('mat')">Matcha</button>
+  </div>
+
+  <!-- CHOCOLATE -->
+  <div id="sop-choc">
+    <div class="sop-scale-row">
+      <label>Scale for</label>
+      <input type="range" id="sc-choc" min="1" max="20" step="1" value="1" oninput="updateSop('choc')">
+      <span class="sop-scale-val" id="sv-choc">1 cup</span>
+    </div>
+    <div class="sop-cards">
+      <div class="sop-card">
+        <div class="sop-card-head" style="background:var(--choc-bg);">
+          <div class="sop-card-icon" style="background:rgba(200,133,90,0.2);">🔥</div>
+          <div>
+            <div class="sop-card-title">Hot chocolate <span class="mult-badge mb-choc" id="mb-ch-hot">× 1</span></div>
+            <div class="sop-card-sub">9oz cup</div>
+          </div>
+        </div>
+        <div class="sop-ing-list">
+          <div class="sop-ing"><span class="ing-n">Froth milk</span><span class="ing-v" id="ch-hot-milk">180 ml</span></div>
+          <div class="sop-ing"><span class="ing-n">Choc powder <sub>(2 brown scoops × 13g)</sub></span><span class="ing-v" id="ch-hot-pwd">26 g</span></div>
+          <div class="sop-ing"><span class="ing-n">Sugar syrup <sub>(1:1)</sub></span><span class="ing-v" id="ch-hot-syr">5 ml</span></div>
+        </div>
+        <div class="sop-note"><span class="note-tag">optional</span> Mix powder with a splash of hot water first, then add frothed milk.</div>
+      </div>
+      <div class="sop-card">
+        <div class="sop-card-head" style="background:var(--choc-bg);">
+          <div class="sop-card-icon" style="background:rgba(200,133,90,0.2);">🧊</div>
+          <div>
+            <div class="sop-card-title">Iced chocolate <span class="mult-badge mb-choc" id="mb-ch-iced">× 1</span></div>
+            <div class="sop-card-sub">12oz cup</div>
+          </div>
+        </div>
+        <div class="sop-ing-list">
+          <div class="sop-ing"><span class="ing-n">Normal temp water</span><span class="ing-v" id="ch-ic-wat">15 ml</span></div>
+          <div class="sop-ing"><span class="ing-n">Choc powder</span><span class="ing-v" id="ch-ic-pwd">30 g</span></div>
+          <div class="sop-ing"><span class="ing-n">Sugar syrup <sub>(1:1)</sub></span><span class="ing-v" id="ch-ic-syr">5 ml</span></div>
+          <div class="sop-ing"><span class="ing-n">Milk <sub>(froth till 28°C)</sub></span><span class="ing-v" id="ch-ic-milk">120 ml</span></div>
+          <div class="sop-ing"><span class="ing-n">Ice</span><span class="ing-v" id="ch-ic-ice">120 g</span></div>
+        </div>
+        <div class="sop-note" style="color:var(--text-hint); font-style:italic;">Dissolve powder in water first, add syrup + milk, then top with ice.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MATCHA -->
+  <div id="sop-mat" style="display:none;">
+    <div class="sop-scale-row">
+      <label>Scale for</label>
+      <input type="range" id="sc-mat" min="1" max="20" step="1" value="1" oninput="updateSop('mat')">
+      <span class="sop-scale-val" id="sv-mat">1 cup</span>
+    </div>
+    <div class="sop-cards">
+      <div class="sop-card">
+        <div class="sop-card-head" style="background:var(--mat-bg);">
+          <div class="sop-card-icon" style="background:rgba(107,170,74,0.2);">🔥</div>
+          <div>
+            <div class="sop-card-title">Hot matcha <span class="mult-badge mb-mat" id="mb-mt-hot">× 1</span></div>
+            <div class="sop-card-sub">9oz cup</div>
+          </div>
+        </div>
+        <div class="sop-ing-list">
+          <div class="sop-ing"><span class="ing-n">Froth milk</span><span class="ing-v" id="mt-hot-milk">180 ml</span></div>
+          <div class="sop-ing"><span class="ing-n">Matcha powder <sub>(2 brown scoops × 14g)</sub></span><span class="ing-v" id="mt-hot-pwd">28 g</span></div>
+          <div class="sop-ing"><span class="ing-n">Sugar syrup <sub>(1:1)</sub></span><span class="ing-v" id="mt-hot-syr">5 ml</span></div>
+        </div>
+        <div class="sop-note"><span class="note-tag">optional</span> Whisk matcha with a small amount of hot water before adding milk.</div>
+      </div>
+      <div class="sop-card">
+        <div class="sop-card-head" style="background:var(--mat-bg);">
+          <div class="sop-card-icon" style="background:rgba(107,170,74,0.2);">🧊</div>
+          <div>
+            <div class="sop-card-title">Iced matcha <span class="mult-badge mb-mat" id="mb-mt-iced">× 1</span></div>
+            <div class="sop-card-sub">12oz cup</div>
+          </div>
+        </div>
+        <div class="sop-ing-list">
+          <div class="sop-ing"><span class="ing-n">Normal temp water</span><span class="ing-v" id="mt-ic-wat">15 ml</span></div>
+          <div class="sop-ing"><span class="ing-n">Matcha powder</span><span class="ing-v" id="mt-ic-pwd">35 g</span></div>
+          <div class="sop-ing"><span class="ing-n">Sugar syrup <sub>(1:1)</sub></span><span class="ing-v" id="mt-ic-syr">5 ml</span></div>
+          <div class="sop-ing"><span class="ing-n">Milk <sub>(froth till 28°C)</sub></span><span class="ing-v" id="mt-ic-milk">120 ml</span></div>
+          <div class="sop-ing"><span class="ing-n">Ice</span><span class="ing-v" id="mt-ic-ice">120 g</span></div>
+        </div>
+        <div class="sop-note" style="color:var(--text-hint); font-style:italic;">Dissolve matcha in water first, add syrup + milk, then top with ice.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">DRNK &nbsp;·&nbsp; Sentai PJ Event &nbsp;·&nbsp; 9–11 Jun 2026 &nbsp;·&nbsp; Internal use only</footer>
+
+<script>
+  function switchPanel(id, btn) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function showDrink(d) {
+    document.getElementById('sop-choc').style.display = d === 'choc' ? '' : 'none';
+    document.getElementById('sop-mat').style.display  = d === 'mat'  ? '' : 'none';
+    document.getElementById('btn-choc').className = 'drink-btn' + (d === 'choc' ? ' on-choc' : '');
+    document.getElementById('btn-mat').className  = 'drink-btn' + (d === 'mat'  ? ' on-mat'  : '');
+  }
+
+  function cupLabel(n) { return n === 1 ? '1 cup' : n + ' cups'; }
+
+  function recalc() {
+    const pax     = parseInt(document.getElementById('s-pax').value);
+    const samples = parseInt(document.getElementById('s-samples').value);
+    const vis     = parseInt(document.getElementById('s-vis').value);
+    const chocC   = parseInt(document.getElementById('s-choc').value);
+    const yogC    = parseInt(document.getElementById('s-yog').value);
+    const matC    = parseInt(document.getElementById('s-mat').value);
+
+    document.getElementById('o-pax').textContent     = pax;
+    document.getElementById('o-samples').textContent = samples;
+    document.getElementById('o-vis').textContent     = vis;
+    document.getElementById('o-choc').textContent    = cupLabel(chocC);
+    document.getElementById('o-yog').textContent     = cupLabel(yogC);
+    document.getElementById('o-mat').textContent     = cupLabel(matC);
+
+    const totalSamples = pax * vis;
+    const totalCups    = Math.ceil(totalSamples / samples);
+    document.getElementById('d-pax').innerHTML   = pax + ' <span class="stat-unit">pax</span>';
+    document.getElementById('d-cups').innerHTML  = totalCups + ' <span class="stat-unit">cups</span>';
+
+    const chocG = chocC * 30;
+    const yogG  = yogC  * 30;
+    const matG  = matC  * 35;
+    const totalG = chocG + yogG + matG;
+
+    document.getElementById('r-choc').textContent = chocG + 'g';
+    document.getElementById('r-yog').textContent  = yogG  + 'g';
+    document.getElementById('r-mat').textContent  = matG  + 'g';
+
+    document.getElementById('d-gpersession').innerHTML = totalG + ' <span class="stat-unit">g</span>';
+    document.getElementById('d-eventkg').innerHTML     = (totalG * 6 / 1000).toFixed(2) + ' <span class="stat-unit">kg</span>';
+
+    const products = [
+      { name: 'Chocolate', cups: chocC, gpercup: 30, g: chocG },
+      { name: 'Yogurt frappe', cups: yogC, gpercup: 30, g: yogG },
+      { name: 'Matcha latte', cups: matC, gpercup: 35, g: matG },
+    ];
+
+    document.getElementById('summary-rows').innerHTML = products.map(p =>
+      `<div class="summary-row"><span class="s-label">${p.name} (${p.cups} cups × ${p.gpercup}g)</span><span class="s-val">${p.g}g</span></div>`
+    ).join('');
+    document.getElementById('t-session').textContent = totalG + 'g';
+
+    document.getElementById('event-rows').innerHTML = products.map(p =>
+      `<div class="event-row"><span class="e-label">${p.name} × 6 sessions</span><span class="e-val">${p.g * 6}g &nbsp;<span style="color:var(--text-hint);font-size:11px;">(${(p.g * 6 / 1000).toFixed(2)}kg)</span></span></div>`
+    ).join('');
+    document.getElementById('t-event').textContent = `${totalG * 6}g  (${(totalG * 6 / 1000).toFixed(2)} kg)`;
+  }
+
+  function updateSop(d) {
+    if (d === 'choc') {
+      const n = parseInt(document.getElementById('sc-choc').value);
+      document.getElementById('sv-choc').textContent = cupLabel(n);
+      document.getElementById('mb-ch-hot').textContent  = '× ' + n;
+      document.getElementById('mb-ch-iced').textContent = '× ' + n;
+      document.getElementById('ch-hot-milk').textContent = (180*n) + ' ml';
+      document.getElementById('ch-hot-pwd').textContent  = (26*n)  + ' g';
+      document.getElementById('ch-hot-syr').textContent  = (5*n)   + ' ml';
+      document.getElementById('ch-ic-wat').textContent   = (15*n)  + ' ml';
+      document.getElementById('ch-ic-pwd').textContent   = (30*n)  + ' g';
+      document.getElementById('ch-ic-syr').textContent   = (5*n)   + ' ml';
+      document.getElementById('ch-ic-milk').textContent  = (120*n) + ' ml';
+      document.getElementById('ch-ic-ice').textContent   = (120*n) + ' g';
+    } else {
+      const n = parseInt(document.getElementById('sc-mat').value);
+      document.getElementById('sv-mat').textContent = cupLabel(n);
+      document.getElementById('mb-mt-hot').textContent  = '× ' + n;
+      document.getElementById('mb-mt-iced').textContent = '× ' + n;
+      document.getElementById('mt-hot-milk').textContent = (180*n) + ' ml';
+      document.getElementById('mt-hot-pwd').textContent  = (28*n)  + ' g';
+      document.getElementById('mt-hot-syr').textContent  = (5*n)   + ' ml';
+      document.getElementById('mt-ic-wat').textContent   = (15*n)  + ' ml';
+      document.getElementById('mt-ic-pwd').textContent   = (35*n)  + ' g';
+      document.getElementById('mt-ic-syr').textContent   = (5*n)   + ' ml';
+      document.getElementById('mt-ic-milk').textContent  = (120*n) + ' ml';
+      document.getElementById('mt-ic-ice').textContent   = (120*n) + ' g';
+    }
+  }
+
+  recalc();
+</script>
+</body>
+</html>
